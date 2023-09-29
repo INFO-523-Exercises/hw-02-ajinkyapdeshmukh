@@ -1,0 +1,311 @@
+---
+title: "Hw-02-02"
+author: "Ajinkya Deshmukh"
+format: html
+editor: visual
+---
+
+### Imputing like a Data Scientist
+
+#### Exploring , visualizing, and imputing outliers and missing values (NAs) in a novel data set and produce quality graphs and tables
+
+**Learning from this section**
+
+1.  Loading and exploring a data set with quality tables
+
+2.  Diagnose outliers and missing values
+
+3.  Imputing outliers and missing values
+
+#### Required Setup
+
+```{r}
+# Sets the number of significant figures to 2
+options(digits = 2)
+
+# Required package for quick package downloading and loading 
+if (!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(cluster, # K cluster analyses
+               dlookr, # Exploratory data analysis
+               formattable, # HTML tables from R outputs
+               ggfortify, # Plotting tools for stats
+               ggpubr, # Publishable ggplots
+               here, # Standardizes paths to data
+               kableExtra, # Alternative to formattable
+               knitr, # Needed to write HTML reports
+               missRanger, # To generate NAs
+               plotly, # Visualization package
+               rattle, # Decision tree visualization
+               rpart, # rpart algorithm
+               tidyverse, # Powerful data wrangling package suite
+               visdat) # Another EDA visualization package
+
+# Set global ggplot() theme
+# Theme pub_clean() from the ggpubr package with base text size = 16
+theme_set(theme_pubclean(base_size = 16)) 
+# All axes titles to their respective far right sides
+theme_update(axis.title = element_text(hjust = 1))
+# Remove axes ticks
+theme_update(axis.ticks = element_blank()) 
+# Remove legend key
+theme_update(legend.key = element_blank())
+```
+
+#### Loading and Examining a Data set ("artists.csv")
+
+```{r}
+# Let's load a data set from the species data set
+dataset <- read.csv("artists.csv")
+dataset
+# What does the data look like?
+dataset |>
+  head() |>
+  formattable()
+```
+
+### Diagnosing the Data set
+
+```{r}
+# What are the properties of the data
+dataset |>
+  diagnose() |>
+  formattable()
+```
+
+### Diagnosing Outliers
+
+```{r}
+# Table showing outliers
+dataset |>
+  diagnose_outlier() |>
+  filter(outliers_ratio > 0) |>  
+  mutate(rate = outliers_mean / with_mean) |>
+  arrange(desc(rate)) |> 
+  select(-outliers_cnt) |>
+  formattable()
+```
+
+```{r}
+# Boxplots and histograms of data with and without outliers
+dataset |>
+  select(find_outliers(dataset)) |>
+           plot_outlier()
+```
+
+### Exploration of Missing Values (NAs)
+
+```{r}
+# Randomly generate NAs for 30
+na.dataset <- dataset |>
+  generateNA(p = 0.3)
+
+# First six rows
+na.dataset |>
+head() |>
+  formattable()
+```
+
+```{r}
+# Create the NA table
+na.dataset |>
+  plot_na_pareto(only_na = TRUE, plot = FALSE) |>
+  formattable() # Publishable table
+```
+
+Plot showing the frequency of missing values
+
+```{r}
+# Plot the insersect of the columns with missing values
+# This plot visualizes the table above
+na.dataset |>
+  plot_na_pareto(only_na = TRUE)
+```
+
+### 
+
+### Advanced Exploration of Missing Values (NAs)
+
+1.  Intersect plot shows that for every relevant combination of columns, how many missing values are common.
+
+2.  Orange boxes are the columns which are in question.
+
+3.  x axis shows the number of missing values in that column.
+
+4.  y axis shows the number of missing values in the columns in orange blocks.
+
+```{r}
+# Plot the intersect of the 3 columns with the most missing values
+# This means that some combinations of columns have missing values in the same row
+na.dataset |>
+  select(year, artist_unique_id, whitney_count_to_year) |>
+  plot_na_intersect(only_na = TRUE) 
+```
+
+### Determining if NA Observations are the Same
+
+1.  Missing values can be same observation across several columns.
+
+2.  The visdat package can solve this with the **vis_miss()** function which shows the rows with missing values through **ggplotly().**
+
+3.  Below we will show ALL the columns with NAs, and we can zoom into individual rows.
+
+```{r}
+# Interactive plotly() plot of all NA values to examine every row
+na.dataset |>
+ select(year, artist_race, artist_gender) |>
+ vis_miss() |>
+ ggplotly() 
+```
+
+### Impute Outliers and NAs
+
+-   The principle goal for all imputation is to find the method that does not change the distribution too much.
+
+-   There are several methods to remove outliers and NAs, some of these methods are discussed below with benefits and costs for each.
+
+```{r warning=FALSE}
+# Box plot
+dataset %>% # Set the simulated normal data as a data frame
+  ggplot(aes(x = year, y = artist_gender, fill = artist_gender)) + # Create a ggplot
+  geom_boxplot(width = 0.5, outlier.size = 2, outlier.alpha = 0.5) +
+  xlab("Year") +  # Relabel the x axis label
+  ylab("Artist Gender") + # Remove the y axis label
+  theme(legend.position = "top")
+```
+
+1.  To remove outliers we use **imputate_outlier()** and replace them with values that are estimates based on the existing data
+
+-   **mean:** arithmetic mean
+
+-   **median:** median
+
+-   **mode:** mode
+
+-   **capping:** Imputing the upper outliers with 95 percentile, and impute the bottom outliers with 5 percentile.
+
+#### Mean Imputation
+
+Outliers for the computed variables are imputed by this mean
+
+```{r}
+# Raw summary, output suppressed
+mean_out_imp_edition_number <- na.dataset |>
+  select(edition_number) |>
+  imputate_outlier(edition_number, method = "mean")
+
+# Output showing the summary statistics of our imputation
+mean_out_imp_edition_number |>
+  summary() 
+```
+
+```{r}
+# Visualization of the mean imputation
+mean_out_imp_edition_number |>
+  plot()
+```
+
+#### Median Imputation
+
+Outliers for the compared variables are imputed by this median
+
+```{r}
+# Raw summary, output suppressed
+med_out_imp_edition_number <- dataset |>
+  select(edition_number) |>
+  imputate_outlier(edition_number, method = "median")
+
+# Output showing the summary statistics of our imputation
+med_out_imp_edition_number |>
+  summary()
+```
+
+```{r}
+# Visualization of the median imputation
+med_out_imp_edition_number |>
+  plot()
+```
+
+#### Mode Imputation
+
+Outliers for the compared variables are imputed by this mode
+
+```{r}
+# Raw summary, output suppressed
+mode_out_imp_edition_number <- dataset |>
+  select(edition_number) |>
+  imputate_outlier(edition_number, method = "mode")
+
+# Output showing the summary statistics of our imputation
+mode_out_imp_edition_number |>
+  summary()
+```
+
+```{r}
+# Visualization of the mode imputation
+mode_out_imp_edition_number |>
+plot()
+```
+
+### K-Nearest Neighbor (KNN) Imputation
+
+```{r}
+#check for missing values
+any(is.na(dataset))
+#Check for infinite values
+any(is.infinite(dataset$edition_number))
+#Impute missing values
+dataset <- na.omit(dataset)
+# KNN plot of our dataset without categories
+autoplot(clara(dataset[-6], 3))
+```
+
+```{r warning=FALSE}
+library(magrittr)
+non_numeric <- dataset %>%
+  select_if(is.numeric)
+# Raw summary, output suppressed
+knn_na_imp_space <- non_numeric %>%
+  imputate_na(edition_number, method = "knn")
+
+# Plot showing the results of our imputation
+knn_na_imp_space %>%
+  plot()
+```
+
+### Recursive Partitioning and Regression Trees (rpart)
+
+rpart is a decision tree machine learning algorithm that builds classification or regression models through a two stage process, which can be thought of as binary trees. The algorithm splits the data into subsets, which move down other branches of the tree until a termination criteria is reached.
+
+```{r}
+library(magrittr)
+non_numeric <- na.dataset %>%
+  select_if(is.numeric)
+# Raw summary, output suppressed
+rpart_na_imp_space <- non_numeric %>%
+  imputate_na(edition_number, method = "rpart")
+
+# Plot showing the results of our imputation
+rpart_na_imp_space %>%
+  plot()
+```
+
+### Multivariate Imputation by Chained Equations (MICE)
+
+MICE is an algorithm that fills missing values multiple times, hence dealing with uncertainty better than other methods. This approach creates multiple copies of the data that can then be analyzed and then pooled into a single dataset.
+
+```{r}
+library(magrittr)
+non_numeric <- na.dataset %>%
+  select_if(is.numeric)
+# Raw summary, output suppressed
+mice_na_imp_edition_number <- non_numeric %>%
+  imputate_na(edition_number, method = "mice", seed = 123)
+```
+
+```{r}
+# Plot showing the results of our imputation
+mice_na_imp_edition_number |>
+  plot()
+```

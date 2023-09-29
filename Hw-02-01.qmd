@@ -1,0 +1,193 @@
+---
+title: "Hw-02-01"
+author: "Ajinkya Deshmukh"
+format: html
+editor: visual
+---
+
+## Starting with the Required Setups
+
+Preparing the required setup with necessary packages
+
+```{r}
+options(repos = list(CRAN = "http://cran.rstudio.com/"))
+
+# Sets the number of significant figures to two - e.g., 0.01
+options(digits = 2)
+
+install.packages("tidytuesdayR")
+
+# Required package for quick package downloading and loading 
+if (!require(pacman))  
+  install.packages("pacman")
+
+# Downloads and load required packages
+pacman::p_load(dlookr, # Exploratory data analysis
+               forecast, # Needed for Box-Cox transformations
+               formattable, # HTML tables from R outputs
+               here, # Standardizes paths to data
+               kableExtra, # Alternative to formattable
+               knitr, # Needed to write HTML reports
+               missRanger, # To generate NAs
+               tidyverse) # Powerful data wrangling package suite
+```
+
+### Loading and Examining the Data
+
+```{r}
+# Get the Data
+
+# Read in with tidytuesdayR package 
+# Install from CRAN via: install.packages("tidytuesdayR")
+# This loads the readme and all the datasets for the week of interest
+
+# Read in the data manually
+
+artists <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-01-17/artists.csv')
+
+```
+
+### Loading the Dataset ("artists") from TidyTuesday package
+
+```{r}
+# Let's load a data set from the surveys data set
+dataset <- read.csv("artists.csv")
+dataset
+# What does the data look like?
+dataset |>
+  head() |>
+  formattable()
+```
+
+## Data Normality
+
+Normal distributions, often represented as bell curves, serve as a fundamental assumption in various hypothesis testing statistics, particularly in the realm of parametric statistics. Departures from normality can significantly distort the outcomes or diminish the ability to detect substantial statistical distinctions.
+
+Key distribution characteristics to be mindful of include:
+
+1.  The mean, median, and mode sharing the same value.
+
+2.  Symmetry of the distribution around the mean.
+
+3.  Normal distributions being characterized by their mean and standard deviation.
+
+### Describing Properties of our Data
+
+#### Skewness
+
+```{r}
+dataset |>
+  select(year, artist_unique_id, moma_count_to_year) |>
+  describe() |>
+  select(described_variables, skewness) |>
+  formattable()
+```
+
+### Testing Normality
+
+#### Q-Q Plots
+
+```{r}
+dataset |>
+  plot_normality(year, artist_unique_id, moma_count_to_year)
+```
+
+#### Normality within Groups
+
+Looking with **year** at the subgroup normality
+
+##### Q-Q Plots
+
+```{r}
+dataset %>%
+  group_by(artist_gender) %>%
+  select(year, artist_unique_id) %>%
+  plot_normality()
+```
+
+### Transforming Data
+
+We will try to transform the **Home_score** column through several approaches and discuss the pros and cons of each. First however, we will remove **0** values.
+
+```{r}
+InsMod <- dataset |>
+  filter(moma_count_to_year > 0)
+```
+
+### Square-root, Cube-root, and Logarithmic Transformations
+
+### Square-root Transformation
+
+```{r}
+sqrtIns <- transform(InsMod$moma_count_to_year, method = "sqrt")
+summary(sqrtIns)
+```
+
+```{r}
+sqrtIns |>
+  plot()
+```
+
+### 
+
+### Logarithmic (+1) Transformation
+
+```{r}
+Log1Ins <- transform(InsMod$moma_count_to_year, method = "log+1")
+summary(Log1Ins)
+```
+
+```{r}
+Log1Ins |>
+  plot()
+```
+
+### Inverse Transformation
+
+```{r}
+InvIns <- transform(InsMod$moma_count_to_year, method = "1/x")
+summary(InvIns)
+```
+
+```{r}
+InvIns |>
+  plot()
+```
+
+### Squared Transformation
+
+```{r}
+SqrdIns <- transform(InsMod$moma_count_to_year, method = "x^2")
+summary(SqrdIns)
+```
+
+```{r}
+SqrdIns |>
+  plot()
+```
+
+### Cubed Transformation
+
+```{r}
+CubeIns <- transform(InsMod$moma_count_to_year, method = "x^3")
+summary(CubeIns)
+```
+
+```{r}
+CubeIns |>
+  plot()
+```
+
+### Box-cox Transformation
+
+To fix extremely skewed data **Box-Cox transformation** can be used, which searches for the best lambda value that maximizes the log-likelihood.
+
+```{r}
+BoxCoxIns <- transform(InsMod$moma_count_to_year, method = "Box-Cox")
+summary(BoxCoxIns)
+```
+
+```{r}
+BoxCoxIns |>
+  plot()
+```

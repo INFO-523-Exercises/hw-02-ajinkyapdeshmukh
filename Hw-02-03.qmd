@@ -1,0 +1,191 @@
+---
+title: "Hw-02-03"
+author: "Ajinkya Deshmukh"
+format: html
+editor: visual
+---
+
+### Correlating Like a Data Master
+
+#### Assess relationships within a novel data set using publication quality tables and plots
+
+#### Required setup
+
+```{r}
+if (!require(pacman))
+  install.packages("pacman")
+
+pacman::p_load(dlookr,
+       formattable,
+       GGally,
+       ggdist,
+       ggpubr,
+       ggridges,
+       here,
+       tidyverse)
+
+# Set global ggplot() theme
+# Theme pub_clean() from the ggpubr package with base text size = 16
+theme_set(theme_pubclean(base_size = 12)) 
+# All axes titles to their respective far right sides
+theme_update(axis.title = element_text(hjust = 1))
+# Remove axes ticks
+theme_update(axis.ticks = element_blank()) 
+# Remove legend key
+theme_update(legend.key = element_blank())
+```
+
+#### Loading and Examining a Data set ("artists.csv")
+
+```{r}
+# Let's load a data set from the species data set
+dataset <- read.csv("artists.csv")
+dataset
+# What does the data look like?
+dataset |>
+  head() |>
+  formattable()
+```
+
+#### Describe and Visualize Correlations
+
+-   Correlations refer to statistical relationships between two numerical variables, which may or may not imply a cause-and-effect connection. By examining correlations within your dataset, you can assess data independence, a critical assumption in parametric statistics, indicating that your variables were collected randomly.
+
+```{r}
+# Table of correlations between numerical variables
+correlate(dataset) |>
+  formattable()
+```
+
+```{r warning=FALSE}
+# Correlation matrix of numerical variables
+dataset |>
+plot_correlate()
+```
+
+#### Visualize Correlations within Groups
+
+-   Numerical variable correlates within the groups
+
+```{r warning=FALSE}
+dataset |>
+  group_by(book) |>
+  plot_correlate()
+```
+
+```{r warning=FALSE}
+dataset |> 
+  dplyr::select(artist_gender, edition_number, artist_unique_id) |>
+  ggpairs(aes(color = artist_gender, alpha = 0.5)) +
+  theme(strip.background = element_blank()) # I don't like facet strip backgrounds...
+
+```
+
+### Describe and Visualize Relationships Based on Target Variables
+
+#### Target Variables
+
+-   Target variables are essentially numerical or categorical variables that you want to relate others in a data frame. **dlookr** does this through the **target_by()** function, which is similar to **group_by()** in **dplyr**. The **relate()** function then briefly analyzes the relationship between the target variable and the variables of interest.
+
+-   The relationships below will have the formula relationship **target \~ predictor**.
+
+### Numerical Target Variables: Numerical Variable of Interest
+
+-   **Formula: year (numerical response) \~** **artist_unique_id (numerical predictor)**
+
+```{r}
+# First, we need to remove NAs, they cause an error
+dataset.noNA <- dataset |> 
+  drop_na()
+
+# The numerical predictor variable that we want
+num <- target_by(dataset.noNA, year)
+
+# Relating the variable of interest to the numerical target variable
+num_num <- relate(num, artist_unique_id)
+
+# Summary of the regression analysis - the same as the summary from lm(Formula)
+summary(num_num)
+```
+
+```{r}
+# Plotting the linear relationship
+plot(num_num)
+```
+
+#### Numerical Target Variables: Categorical Variable of Interest
+
+-   **Formula: edition_number (numerical response) \~** **book (categorical predictor)**
+
+```{r}
+# The categorical predictor variable that we want
+num <- target_by(dataset, edition_number) 
+
+# We need to change Group to a factor
+num$book <- as.factor(num$book)
+
+# Relating the variable of interest to the numerical target variable
+num_cat <- relate(num, book)
+
+# Summary of the ANOVA analysis - the same as the summary from anova(lm(Formula))
+summary(num_cat)
+```
+
+```{r warning=FALSE}
+plot(num_cat) + 
+  theme(axis.text.x = element_blank())
+```
+
+#### Categorical Target Variables: Numerical Variable of Interest
+
+-   **Formula: artist_gender (categorical) \~** **year (numerical)**
+
+```{r warning=FALSE}
+# The categorical predictor variable that we want
+categ <- target_by(dataset, artist_gender)
+
+# Relating the variable of interest to the numerical target variable
+cat_num <- relate(categ, year)
+
+# Summary of descriptive statistics
+summary(cat_num)
+```
+
+```{r}
+plot(cat_num)
+```
+
+### Categorical Target Variables: Categorical Variable of Interest
+
+```{r}
+# Create new categorical column
+cat_dataset <- dataset |>
+  select(edition_number, book) |>
+  drop_na() |>
+  mutate(Latest_Edition = ifelse(
+    edition_number > (mean(edition_number + sd(edition_number))), 
+                          "Yes", 
+                          "No"))
+
+# New dataset 
+cat_dataset |>
+  head() |>
+  formattable()
+```
+
+-   **Formula: Latest_Edition (categorical) \~** **book (categorical response)**
+
+```{r warning=FALSE}
+# The categorical predictor variable that we want
+categ <- target_by(cat_dataset, Latest_Edition)
+
+# Relating the variable of interest to the categorical target variable
+cat_cat <- relate(categ, book)
+
+# Summary of the Chi-square test for Independence
+summary(cat_cat)
+```
+
+```{r}
+plot(cat_cat)
+```
