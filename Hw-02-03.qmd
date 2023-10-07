@@ -38,7 +38,7 @@ theme_update(legend.key = element_blank())
 #### Loading and Examining a Data set ("artists.csv")
 
 ```{r}
-# Let's load a data set from the species data set
+# Let's load a data set from the artists data set
 dataset <- read.csv("artists.csv")
 dataset
 # What does the data look like?
@@ -46,6 +46,12 @@ dataset |>
   head() |>
   formattable()
 ```
+
+-   From the dataset used we have displayed the attributes of the dataset in 2 formats:
+
+-   **data.frame:** displays the attributes in the dataset with the datatypes.
+
+-   **formattable_widge:** displays the attributes and the data associated with the attributes.
 
 #### Describe and Visualize Correlations
 
@@ -57,11 +63,15 @@ correlate(dataset) |>
   formattable()
 ```
 
+-   Displaying the correlations between the numerical attributes in the dataset
+
 ```{r warning=FALSE}
 # Correlation matrix of numerical variables
 dataset |>
 plot_correlate()
 ```
+
+-   Plotting the Correlation calculated between the numerical attributes in matrix form.
 
 #### Visualize Correlations within Groups
 
@@ -73,13 +83,17 @@ dataset |>
   plot_correlate()
 ```
 
+-   Plotting the Correlation calculated between the numerical attributes in groups.
+
 ```{r warning=FALSE}
 dataset |> 
   dplyr::select(artist_gender, edition_number, artist_unique_id) |>
   ggpairs(aes(color = artist_gender, alpha = 0.5)) +
-  theme(strip.background = element_blank()) # I don't like facet strip backgrounds...
-
+  theme(strip.background = element_blank())
 ```
+
+-   Displaying the relationship between the numerical attributes from the dataset through different highlights of the attributes and varying the color grading based on the **artist\_\
+    gender** attribute.
 
 ### Describe and Visualize Relationships Based on Target Variables
 
@@ -113,6 +127,8 @@ summary(num_num)
 plot(num_num)
 ```
 
+-   Plotting the linear relationship between the numerical attributes of the dataset involving the predicted and observed values.
+
 #### Numerical Target Variables: Categorical Variable of Interest
 
 -   **Formula: edition_number (numerical response) \~** **book (categorical predictor)**
@@ -136,6 +152,8 @@ plot(num_cat) +
   theme(axis.text.x = element_blank())
 ```
 
+-   Plotting the box-plot using the ANOVA Analysis.
+
 #### Categorical Target Variables: Numerical Variable of Interest
 
 -   **Formula: artist_gender (categorical) \~** **year (numerical)**
@@ -154,6 +172,8 @@ summary(cat_num)
 ```{r}
 plot(cat_num)
 ```
+
+-   Plotting the summary of descriptive statistics analysis.
 
 ### Categorical Target Variables: Categorical Variable of Interest
 
@@ -189,3 +209,5 @@ summary(cat_cat)
 ```{r}
 plot(cat_cat)
 ```
+
+-   Plotting the summary graph of the Chi-Square test for Independence

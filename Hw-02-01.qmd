@@ -50,7 +50,7 @@ artists <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/ti
 ### Loading the Dataset ("artists") from TidyTuesday package
 
 ```{r}
-# Let's load a data set from the surveys data set
+# Let's load a data set from the artists data set
 dataset <- read.csv("artists.csv")
 dataset
 # What does the data look like?
@@ -58,6 +58,12 @@ dataset |>
   head() |>
   formattable()
 ```
+
+-   From the dataset used we have displayed the attributes of the dataset in 2 formats:
+
+-   **data.frame:** displays the attributes in the dataset with the datatypes.
+
+-   **formattable_widge:** displays the attributes and the data associated with the attributes.
 
 ## Data Normality
 
@@ -83,6 +89,8 @@ dataset |>
   formattable()
 ```
 
+-   From the dataset used we are calculating the skewness of the numerical attributes.
+
 ### Testing Normality
 
 #### Q-Q Plots
@@ -91,6 +99,8 @@ dataset |>
 dataset |>
   plot_normality(year, artist_unique_id, moma_count_to_year)
 ```
+
+-   We are calculating the Normality and plotting the normality for the numerical attributes mentioned above from the dataset.
 
 #### Normality within Groups
 
@@ -105,9 +115,11 @@ dataset %>%
   plot_normality()
 ```
 
+-   We are calculating the Normality by grouping the numerical attributes and plotting the normality from the dataset.
+
 ### Transforming Data
 
-We will try to transform the **Home_score** column through several approaches and discuss the pros and cons of each. First however, we will remove **0** values.
+We will try to transform the **Moma_count_to_year** column through several approaches and discuss the pros and cons of each. First however, we will remove **0** values.
 
 ```{r}
 InsMod <- dataset |>
@@ -128,7 +140,7 @@ sqrtIns |>
   plot()
 ```
 
-### 
+-   We can calculating the transformation based on method **sqrt** for **Square Root** transformation.
 
 ### Logarithmic (+1) Transformation
 
@@ -142,6 +154,8 @@ Log1Ins |>
   plot()
 ```
 
+-   We can calculating the transformation based on method **log+1** for **Logarithmic** transformation.
+
 ### Inverse Transformation
 
 ```{r}
@@ -153,6 +167,8 @@ summary(InvIns)
 InvIns |>
   plot()
 ```
+
+-   We can calculating the transformation based on method **1/x** for **Inverse** transformation.
 
 ### Squared Transformation
 
@@ -166,6 +182,8 @@ SqrdIns |>
   plot()
 ```
 
+-   We can calculating the transformation based on method **x\^2** for **Square** transformation.
+
 ### Cubed Transformation
 
 ```{r}
@@ -177,6 +195,8 @@ summary(CubeIns)
 CubeIns |>
   plot()
 ```
+
+-   We can calculating the transformation based on method **x\^3** for **Cubic** transformation.
 
 ### Box-cox Transformation
 
@@ -191,3 +211,5 @@ summary(BoxCoxIns)
 BoxCoxIns |>
   plot()
 ```
+
+-   We can calculating the transformation based on method **Box-Cox** for **Box-Cox** transformation fixing the extremely skewed data.

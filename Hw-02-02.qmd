@@ -56,7 +56,7 @@ theme_update(legend.key = element_blank())
 #### Loading and Examining a Data set ("artists.csv")
 
 ```{r}
-# Let's load a data set from the species data set
+# Let's load a data set from the artists data set
 dataset <- read.csv("artists.csv")
 dataset
 # What does the data look like?
@@ -64,6 +64,12 @@ dataset |>
   head() |>
   formattable()
 ```
+
+-   From the dataset used we have displayed the attributes of the dataset in 2 formats:
+
+-   **data.frame:** displays the attributes in the dataset with the datatypes.
+
+-   **formattable_widge:** displays the attributes and the data associated with the attributes.
 
 ### Diagnosing the Data set
 
@@ -73,6 +79,8 @@ dataset |>
   diagnose() |>
   formattable()
 ```
+
+-   Displaying the properties of the dataset like datatypes.
 
 ### Diagnosing Outliers
 
@@ -87,12 +95,16 @@ dataset |>
   formattable()
 ```
 
+-   Displaying the outliers count for the numerical attributes in the dataset
+
 ```{r}
 # Boxplots and histograms of data with and without outliers
 dataset |>
   select(find_outliers(dataset)) |>
            plot_outlier()
 ```
+
+-   Plotting the outliers calculated for the numerical attributes.
 
 ### Exploration of Missing Values (NAs)
 
@@ -107,12 +119,16 @@ head() |>
   formattable()
 ```
 
+-   Displaying the dataset after adding NA values in the attributes.
+
 ```{r}
 # Create the NA table
 na.dataset |>
   plot_na_pareto(only_na = TRUE, plot = FALSE) |>
   formattable() # Publishable table
 ```
+
+-   Creating and the NA table for the dataset
 
 Plot showing the frequency of missing values
 
@@ -123,7 +139,7 @@ na.dataset |>
   plot_na_pareto(only_na = TRUE)
 ```
 
-### 
+-   Plotting the intersect of the columns with missing values in the dataset.
 
 ### Advanced Exploration of Missing Values (NAs)
 
@@ -143,6 +159,8 @@ na.dataset |>
   plot_na_intersect(only_na = TRUE) 
 ```
 
+-   Plot the intersect of the 3 columns with the most missing values
+
 ### Determining if NA Observations are the Same
 
 1.  Missing values can be same observation across several columns.
@@ -159,6 +177,8 @@ na.dataset |>
  ggplotly() 
 ```
 
+-   Plotting all the NA values to examine every row of the dataset
+
 ### Impute Outliers and NAs
 
 -   The principle goal for all imputation is to find the method that does not change the distribution too much.
@@ -174,6 +194,8 @@ dataset %>% # Set the simulated normal data as a data frame
   ylab("Artist Gender") + # Remove the y axis label
   theme(legend.position = "top")
 ```
+
+-   Plotting the calculated outliers from the dataset.
 
 1.  To remove outliers we use **imputate_outlier()** and replace them with values that are estimates based on the existing data
 
@@ -206,6 +228,8 @@ mean_out_imp_edition_number |>
   plot()
 ```
 
+-   Displaying the mean plot after imputing the numerical attribute.
+
 #### Median Imputation
 
 Outliers for the compared variables are imputed by this median
@@ -226,6 +250,8 @@ med_out_imp_edition_number |>
 med_out_imp_edition_number |>
   plot()
 ```
+
+-   Displaying the median plot after imputing the numerical attribute.
 
 #### Mode Imputation
 
@@ -248,6 +274,8 @@ mode_out_imp_edition_number |>
 plot()
 ```
 
+-   Displaying the mode plot after imputing the numerical attribute.
+
 ### K-Nearest Neighbor (KNN) Imputation
 
 ```{r}
@@ -261,6 +289,8 @@ dataset <- na.omit(dataset)
 autoplot(clara(dataset[-6], 3))
 ```
 
+-   Plotting the KNN Imputation for the dataset.
+
 ```{r warning=FALSE}
 library(magrittr)
 non_numeric <- dataset %>%
@@ -273,6 +303,8 @@ knn_na_imp_space <- non_numeric %>%
 knn_na_imp_space %>%
   plot()
 ```
+
+-   Plotting the results obtained after imputing the dataset and removing the NA and infinite values.
 
 ### Recursive Partitioning and Regression Trees (rpart)
 
@@ -290,6 +322,8 @@ rpart_na_imp_space <- non_numeric %>%
 rpart_na_imp_space %>%
   plot()
 ```
+
+-   Plotting the results obtained after imputing the dataset and splitting the dataset into subsets.
 
 ### Multivariate Imputation by Chained Equations (MICE)
 
@@ -309,3 +343,5 @@ mice_na_imp_edition_number <- non_numeric %>%
 mice_na_imp_edition_number |>
   plot()
 ```
+
+-   Plotting the results obtained after imputing the dataset after dealing with uncertainty.

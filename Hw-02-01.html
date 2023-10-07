@@ -114,7 +114,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>
 The downloaded binary packages are in
-    /var/folders/kx/gs8nsljj1rq_nvzhpchn_g5c0000gn/T//RtmpXriA6F/downloaded_packages</code></pre>
+    /var/folders/kx/gs8nsljj1rq_nvzhpchn_g5c0000gn/T//RtmpV6AhPc/downloaded_packages</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Required package for quick package downloading and loading </span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(pacman))  </span>
@@ -159,7 +159,7 @@ dbl (6): edition_number, year, space_ratio_per_page_total, artist_unique_id,...
 <section id="loading-the-dataset-artists-from-tidytuesday-package" class="level3">
 <h3 class="anchored" data-anchor-id="loading-the-dataset-artists-from-tidytuesday-package">Loading the Dataset (“artists”) from TidyTuesday package</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's load a data set from the surveys data set</span></span>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's load a data set from the artists data set</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"artists.csv"</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>dataset</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -16302,6 +16302,11 @@ Non-White
 </table>
 </div>
 </div>
+<ul>
+<li><p>From the dataset used we have displayed the attributes of the dataset in 2 formats:</p></li>
+<li><p><strong>data.frame:</strong> displays the attributes in the dataset with the datatypes.</p></li>
+<li><p><strong>formattable_widge:</strong> displays the attributes and the data associated with the attributes.</p></li>
+</ul>
 </section>
 </section>
 <section id="data-normality" class="level2">
@@ -16366,6 +16371,9 @@ moma_count_to_year
 </table>
 </div>
 </div>
+<ul>
+<li>From the dataset used we are calculating the skewness of the numerical attributes.</li>
+</ul>
 </section>
 </section>
 <section id="testing-normality" class="level3">
@@ -16385,6 +16393,9 @@ moma_count_to_year
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<ul>
+<li>We are calculating the Normality and plotting the normality for the numerical attributes mentioned above from the dataset.</li>
+</ul>
 </section>
 <section id="normality-within-groups" class="level4">
 <h4 class="anchored" data-anchor-id="normality-within-groups">Normality within Groups</h4>
@@ -16418,12 +16429,15 @@ moma_count_to_year
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-6-6.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<ul>
+<li>We are calculating the Normality by grouping the numerical attributes and plotting the normality from the dataset.</li>
+</ul>
 </section>
 </section>
 </section>
 <section id="transforming-data" class="level3">
 <h3 class="anchored" data-anchor-id="transforming-data">Transforming Data</h3>
-<p>We will try to transform the <strong>Home_score</strong> column through several approaches and discuss the pros and cons of each. First however, we will remove <strong>0</strong> values.</p>
+<p>We will try to transform the <strong>Moma_count_to_year</strong> column through several approaches and discuss the pros and cons of each. First however, we will remove <strong>0</strong> values.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>InsMod <span class="ot">&lt;-</span> dataset <span class="sc">|&gt;</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(moma_count_to_year <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -16476,9 +16490,9 @@ p100         64.0        8.0e+00</code></pre>
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</section>
-<section id="section" class="level3">
-<h3 class="anchored" data-anchor-id="section"></h3>
+<ul>
+<li>We can calculating the transformation based on method <strong>sqrt</strong> for <strong>Square Root</strong> transformation.</li>
+</ul>
 </section>
 <section id="logarithmic-1-transformation" class="level3">
 <h3 class="anchored" data-anchor-id="logarithmic-1-transformation">Logarithmic (+1) Transformation</h3>
@@ -16524,6 +16538,9 @@ p100         64.0          4.174</code></pre>
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<ul>
+<li>We can calculating the transformation based on method <strong>log+1</strong> for <strong>Logarithmic</strong> transformation.</li>
+</ul>
 </section>
 <section id="inverse-transformation" class="level3">
 <h3 class="anchored" data-anchor-id="inverse-transformation">Inverse Transformation</h3>
@@ -16569,6 +16586,9 @@ p100         64.0        1.0e+00</code></pre>
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<ul>
+<li>We can calculating the transformation based on method <strong>1/x</strong> for <strong>Inverse</strong> transformation.</li>
+</ul>
 </section>
 <section id="squared-transformation" class="level3">
 <h3 class="anchored" data-anchor-id="squared-transformation">Squared Transformation</h3>
@@ -16614,6 +16634,9 @@ p100         64.0         4096.0</code></pre>
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<ul>
+<li>We can calculating the transformation based on method <strong>x^2</strong> for <strong>Square</strong> transformation.</li>
+</ul>
 </section>
 <section id="cubed-transformation" class="level3">
 <h3 class="anchored" data-anchor-id="cubed-transformation">Cubed Transformation</h3>
@@ -16659,6 +16682,9 @@ p100         64.0        2.6e+05</code></pre>
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<ul>
+<li>We can calculating the transformation based on method <strong>x^3</strong> for <strong>Cubic</strong> transformation.</li>
+</ul>
 </section>
 <section id="box-cox-transformation" class="level3">
 <h3 class="anchored" data-anchor-id="box-cox-transformation">Box-cox Transformation</h3>
@@ -16705,6 +16731,9 @@ p100         64.0          2.871</code></pre>
 <p><img src="Hw-02-01_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<ul>
+<li>We can calculating the transformation based on method <strong>Box-Cox</strong> for <strong>Box-Cox</strong> transformation fixing the extremely skewed data.</li>
+</ul>
 </section>
 </section>
 
