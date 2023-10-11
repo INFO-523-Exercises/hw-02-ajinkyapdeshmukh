@@ -40,7 +40,8 @@ theme_update(legend.key = element_blank())
 ```{r}
 # Let's load a data set from the artists data set
 dataset <- read.csv("artists.csv")
-dataset
+dataset |>
+  glimpse()
 # What does the data look like?
 dataset |>
   head() |>
